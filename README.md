@@ -52,12 +52,48 @@ public class LibraryManagementGUI extends JFrame {
             }
         });
 
+        JButton issueButton = new JButton("Issue Book");
+        issueButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int id = Integer.parseInt(idField.getText());
+                int index = findBookIndexById(id);
+                if (index != -1) {
+                    if (books[index].issue()) {
+                        outputArea.setText("Book issued successfully.");
+                    } else {
+                        outputArea.setText("No available copies of the book.");
+                    }
+                } else {
+                    outputArea.setText("Book not found.");
+                }
+            }
+        });
+
+        JButton returnButton = new JButton("Return Book");
+        returnButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int id = Integer.parseInt(idField.getText());
+                int index = findBookIndexById(id);
+                if (index != -1) {
+                    if (books[index].returnBook()) {
+                        outputArea.setText("Book returned successfully.");
+                    } else {
+                        outputArea.setText("All copies of the book are already available.");
+                    }
+                } else {
+                    outputArea.setText("Book not found.");
+                }
+            }
+        });
+
         inputPanel.add(idLabel);
         inputPanel.add(idField);
         inputPanel.add(titleLabel);
         inputPanel.add(titleField);
         inputPanel.add(setDetailsButton);
         inputPanel.add(getDetailsButton);
+        inputPanel.add(issueButton);
+        inputPanel.add(returnButton);
 
         outputArea = new JTextArea();
         outputArea.setEditable(false);
@@ -99,10 +135,12 @@ public class LibraryManagementGUI extends JFrame {
 class Book {
     private int bookId;
     private String bookTitle;
+    private int availableCopies;
 
     public Book(int bookId, String bookTitle) {
         this.bookId = bookId;
         this.bookTitle = bookTitle;
+        this.availableCopies = 1; // Initialize with one available copy
     }
 
     public int getBookId() {
@@ -110,7 +148,22 @@ class Book {
     }
 
     public String getDetails() {
-        return "Book ID: " + bookId + "\nBook Title: " + bookTitle;
+        return "Book ID: " + bookId + "\nBook Title: " + bookTitle + "\nAvailable Copies: " + availableCopies;
+    }
+
+    public boolean issue() {
+        if (availableCopies > 0) {
+            availableCopies--;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean returnBook() {
+        if (availableCopies < 1) {
+            availableCopies++;
+            return true;
+        }
+        return false;
     }
 }
-
